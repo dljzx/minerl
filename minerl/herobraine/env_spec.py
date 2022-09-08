@@ -7,7 +7,8 @@ from minerl.herobraine.hero.handlers.translation import TranslationHandler
 import typing
 from minerl.herobraine.hero.spaces import Dict
 from minerl.herobraine.hero.handler import Handler
-from typing import List
+from minerl.herobraine.cmd_executor import CMDExecutor
+from typing import List, Optional
 
 import jinja2
 import gym
@@ -27,15 +28,17 @@ class EnvSpec(abc.ABC):
     U_SINGLE_AGENT_ENTRYPOINT = 'minerl.env._singleagent:_SingleAgentEnv'
     U_FAKE_SINGLE_AGENT_ENTRYPOINT = 'minerl.env._fake:_FakeSingleAgentEnv'
 
-    def __init__(self, name, max_episode_steps=None, reward_threshold=None, agent_count=None, **kwargs):
+    def __init__(self, name, max_episode_steps=None, reward_threshold=None, agent_count=None, 
+                 raise_error_on_invalid_cmds=False, **kwargs):
         self.name = name
         self.max_episode_steps = max_episode_steps
         self.reward_threshold = reward_threshold
         self.agent_count = 1 if agent_count is None else agent_count
         self.is_single_agent = agent_count is None
         self.agent_names = ["agent_{role}".format(role=role) for role in range(self.agent_count)]
-
+        
         self.reset()
+        self._cmd_executor = CMDExecutor(self, raise_error_on_invalid_cmds)
 
     def reset(self):
         # Note: currently only agent_start needs to be per-agent. To make more attributes per-agent,
@@ -300,3 +303,19 @@ class EnvSpec(abc.ABC):
 
         return [etree.tostring(t, pretty_print=True).decode('utf-8')
                 for t in consolidated_trees]
+
+    def execute_cmd(self, cmd: str, action: Optional[dict] = None):
+        """Execute a given string command.
+
+        Args:
+            cmd: The string command accepted by the Minecraft client.
+            action: An action that will be simultaneously executed with the command.
+
+        Return:
+            A tuple (obs, reward, done, info)
+            - ``dict`` - Agent’s observation of the current environment.
+            - ``float`` - Amount of reward returned after previous action.
+            - ``bool`` - Whether the episode has ended.
+            - ``dict`` - Contains auxiliary diagnostic information (helpful for debugging, and sometimes learning).
+        """
+        return self._cmd_executor.execute_cmd(cmd, action)

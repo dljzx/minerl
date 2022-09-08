@@ -311,7 +311,10 @@ class Enum(Discrete, MineRLSpace):
 # TODO: Vectorize containment?
 class Dict(gym.spaces.Dict, MineRLSpace):
     def no_op(self, batch_shape=()):
-        return OrderedDict([(k, space.no_op(batch_shape=batch_shape)) for k, space in self.spaces.items()])
+        no_op = OrderedDict([(k, space.no_op(batch_shape=batch_shape)) for k, space in self.spaces.items() if k !='chat'])
+        if 'chat' in self.spaces.keys():
+            no_op.update({'chat': ''})
+        return no_op
 
     def create_flattened_space(self):
         shape = sum([s.flattened.shape[0] for s in self.spaces.values()

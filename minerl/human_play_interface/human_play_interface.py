@@ -115,12 +115,14 @@ class HumanPlayInterface(gym.Wrapper):
     def _validate_minerl_env(self, minerl_env):
         """Make sure we have a valid MineRL environment. Raises if not."""
         # Make sure action has right items
-        remaining_buttons = set(MINERL_ACTION_TO_KEYBOARD.keys())
+        remaining_buttons = set(list(MINERL_ACTION_TO_KEYBOARD.keys()))
         remaining_buttons.add("camera")
+        if self.env.task.use_chat_to_control:
+            remaining_buttons.add("chat")
         for action_name, action_space in minerl_env.action_space.spaces.items():
             if action_name not in remaining_buttons:
                 raise RuntimeError(f"Invalid MineRL action space: action {action_name} is not supported.")
-            elif (not isinstance(action_space, spaces.Discrete) or action_space.n != 2) and action_name != "camera":
+            elif (not isinstance(action_space, spaces.Discrete) or action_space.n != 2) and action_name not in ["camera", "chat"]:
                 raise RuntimeError(f"Invalid MineRL action space: action {action_name} had space {action_space}. Only Discrete(2) is supported.")
             remaining_buttons.remove(action_name)
         if len(remaining_buttons) > 0:
@@ -192,6 +194,9 @@ class HumanPlayInterface(gym.Wrapper):
                     action = human_action
             else:
                 action = human_action
+        if self.env.task.use_chat_to_control:
+            # action['chat'] = '/give @p diamond 3'
+            action['chat'] = ''
 
         obs, reward, done, info = self.env.step(action)
         self._update_image(obs["pov"])

@@ -14,6 +14,18 @@ ENV_NAMES = [
     'MineRLTreechop-v0',  # Doesn't work because it isn't a HumanEmbodied environment
 ]
 
+ENV_KWARGS = dict(
+    fov_range=[70, 70],
+    frameskip=1,
+    gamma_range=[2, 2],
+    guiscale_range=[2, 2],
+    resolution=[1280, 720],
+    # guiscale_range=[1, 1],
+    # resolution=[1280, 720],
+    cursor_size_range=[16.0, 16.0],
+    use_chat_to_control=True
+)
+
 def test_human_interface():
     env = gym.make(ENV_NAMES[3])
     env = HumanPlayInterface(env)

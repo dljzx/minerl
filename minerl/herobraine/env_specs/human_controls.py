@@ -39,18 +39,20 @@ class HumanControlEnvSpec(EnvSpec, ABC):
 
 
     def __init__(self, name, *args,
-            resolution=(1280, 720),
-            guiscale_range=[2, 2],
-            gamma_range=[2.0, 2.0],
-            fov_range=[130.0,130.0],
-            cursor_size_range=[16, 16],
-            **kwargs):
+                 resolution=(640, 360),
+                 guiscale_range=[1, 1],
+                 gamma_range=[2.0, 2.0],
+                 fov_range=[70.0, 70.0],
+                 cursor_size_range=[16, 16],
+                 use_chat_to_control=False,
+                 **kwargs):
 
         self.resolution = resolution
         self.guiscale_range = guiscale_range
         self.gamma_range = gamma_range
         self.fov_range = fov_range
         self.cursor_size_range = cursor_size_range
+        self.use_chat_to_control = use_chat_to_control
         super().__init__(name, *args, **kwargs)
 
     def create_observables(self) -> List[TranslationHandler]:
@@ -65,10 +67,15 @@ class HumanControlEnvSpec(EnvSpec, ABC):
         Simple envs have some basic keyboard control functionality, but
         not all.
         """
-        return [
-           H.KeybasedCommandAction(v, v) for v in mc.KEYMAP.values()
-        ] + [H.CameraAction()]
-
+        if self.use_chat_to_control:
+            return [
+                H.KeybasedCommandAction(v, v) for v in mc.KEYMAP.values()
+            ] + [H.CameraAction()] + [H.ChatAction()]
+        else:
+            return [
+                H.KeybasedCommandAction(v, v) for v in mc.KEYMAP.values()
+            ] + [H.CameraAction()]
+            
     def create_monitors(self) -> List[TranslationHandler]:
         return [H.IsGuiOpen(), H.ObservationFromCurrentLocation()]
 

@@ -69,6 +69,7 @@ class _MultiAgentEnv(gym.Env):
                  verbose: bool = False,
                  _xml_mutator_to_be_deprecated: Optional[Callable] = None,
                  refresh_instances_every: Optional[int] = None,
+                 raise_error_on_invalid_cmds=False,
                  ):
         """
         Constructor of MineRLEnv.
@@ -99,6 +100,8 @@ class _MultiAgentEnv(gym.Env):
         self._init_interactive()
         self._init_fault_tolerance(is_fault_tolerant)
         self._init_logging(verbose)
+        from minerl.herobraine.cmd_executor import CMDExecutor
+        self._cmd_executor = CMDExecutor(self, raise_error_on_invalid_cmds)
 
     ############ INIT METHODS ##########
     # These methods are used to first initialize different systems in the environment
@@ -129,7 +132,7 @@ class _MultiAgentEnv(gym.Env):
             coloredlogs.install(level=logging.DEBUG)
 
     def _init_seeding(self) -> None:
-        self._seed = None
+        self._seed = 42
 
     ########### CONFIGURATION METHODS ########
 
@@ -259,11 +262,12 @@ class _MultiAgentEnv(gym.Env):
         # TODO this will be fixed when moved into env spec
         # assert self._check_action(actor_name, action_in, bottom_env_spec)
 
-        action_str = []
+        # add command by zym
+        action_str = [f'chat {action_in["chat"]}'] if "chat" in action_in else []
         for h in bottom_env_spec.actionables:
             if h.to_string() in action_in:
                 action_str.append(h.to_hero(action_in[h.to_string()]))
-
+        
         return "\n".join(action_str)
 
     def _check_action(self, actor_name, action, env_spec):
@@ -284,7 +288,6 @@ class _MultiAgentEnv(gym.Env):
             # Process multi-agent actions, apply and process multi-agent observations
             for role, (actor_name, instance) in enumerate(zip(self.task.agent_names, self.instances)):
                 try:  # TODO - we could wrap entire function in try, if sockets don't need to individually clean
-
                     if not self.has_finished[actor_name]:
                         malmo_command = self._process_action(actor_name, actions[actor_name])
                         step_message = "<StepClient" + str(STEP_OPTIONS) + ">" + \
@@ -801,7 +804,6 @@ class _MultiAgentEnv(gym.Env):
 
         if InstanceManager.is_remote():
             launch_queue_logger_thread(instance, self.is_closed)
-
         instance.launch(replaceable=self._is_fault_tolerant)
 
         # Add  a cleaning flag to the instance
@@ -813,3 +815,19 @@ class _MultiAgentEnv(gym.Env):
 
     def _clean_connection(self):
         pass
+    
+    def execute_cmd(self, cmd: str, action: Optional[dict] = None):
+        """Execute a given string command.
+
+        Args:
+            cmd: The string command accepted by the Minecraft client.
+            action: An action that will be simultaneously executed with the command.
+
+        Return:
+            A tuple (obs, reward, done, info)
+            - ``dict`` - Agent’s observation of the current environment.
+            - ``float`` - Amount of reward returned after previous action.
+            - ``bool`` - Whether the episode has ended.
+            - ``dict`` - Contains auxiliary diagnostic information (helpful for debugging, and sometimes learning).
+        """
+        return self._cmd_executor.execute_cmd(cmd, action)

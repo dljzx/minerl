@@ -46,6 +46,10 @@ class LifeStatsObservation(KeymapTranslationHandler):
     def xml_template(self) -> str:
         return str("""<ObservationFromFullStats/>""")
 
+    def from_hero(self, hero_dict):
+        hero_dict = hero_dict['life_stats']
+        return super().from_hero(hero_dict)
+
 
 class _IsAliveObservation(LifeStatsObservation):
     """

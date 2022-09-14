@@ -132,7 +132,8 @@ class CMDExecutor:
             slot, item_dict = parse_inventory_item(inventory_item)
             obs, _, done, info = self.execute_cmd(
                 # f'/replaceitem entity @p {map_slot_number_to_cmd_slot(slot)} minecraft:{item_dict["type"]} {item_dict["quantity"]} {item_dict["metadata"]}',
-                f'/item replace entity @p {map_slot_number_to_cmd_slot(slot)} minecraft:{item_dict["type"]} {item_dict["quantity"]} {item_dict["metadata"]}',
+                f'/replaceitem entity @p {map_slot_number_to_cmd_slot(slot)} minecraft:{item_dict["type"]} {item_dict["quantity"]}',
+                # f'/item replace entity @p {map_slot_number_to_cmd_slot(slot)} minecraft:{item_dict["type"]} {item_dict["quantity"]} {item_dict["metadata"]}',
                 action,
             )
         return obs, 0, done, info
@@ -167,7 +168,8 @@ class CMDExecutor:
             slot, item_dict = parse_inventory_item(inventory_item)
             obs, _, done, info = self.execute_cmd(
                 # f'/replaceitem entity @p {map_slot_number_to_cmd_slot(slot)} minecraft:{item_dict["type"]} {item_dict["quantity"]} {item_dict["metadata"]}',
-                f'/give @p minecraft:{item_dict["type"]} {item_dict["quantity"]} {item_dict["metadata"]}',
+                f'/replaceitem entity @p {map_slot_number_to_cmd_slot(slot)} minecraft:{item_dict["type"]} {item_dict["quantity"]}',
+                # f'/give @p minecraft:{item_dict["type"]} {item_dict["quantity"]} {item_dict["metadata"]}',
                 action,
             )
         return obs, 0, done, info

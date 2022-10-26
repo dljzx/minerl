@@ -91,6 +91,43 @@ class CMDExecutor:
             obs, _, done, info = self.execute_cmd(cmd, action)
         return obs, 0, done, info
 
+    def spawn_items(
+        self,
+        items: Union[str, List[str]],
+        rel_positions: Union[np.ndarray, list],
+        action: Optional[dict] = None,
+    ):
+        if isinstance(items, str):
+            items = [items]
+        if isinstance(rel_positions, list):
+            rel_positions = np.array(rel_positions)
+        if rel_positions.ndim == 1:
+            rel_positions = rel_positions[np.newaxis, ...]
+        if len(items) > 1 and len(rel_positions) == 1:
+            rel_positions = np.repeat(rel_positions, len(items), axis=0)
+        assert (
+            rel_positions.ndim == 2
+        ), f"Expect `rel_positions` to be 2 dimensional, but got {rel_positions.ndim} dims"
+        assert (
+            rel_positions.shape[1] == 3
+        ), "Expect `rel_positions` to contain x, y, and z"
+        assert len(items) == len(
+            rel_positions
+        ), f"Expect {len(items)} relative positions, but got {len(rel_positions)}"
+
+        # obs, info = self._world.prev_obs, self._world.prev_info
+        # for mob, rel_pos in zip(mobs, rel_positions):
+        #     cmd = f"/summon {mob} ~{int(rel_pos[0])} ~{int(rel_pos[1])} ~{int(rel_pos[2])}"
+        #     obs, _, _, info = self.execute_cmd(cmd, action)
+        # return obs, 0, self._world.is_terminated, info
+        # obs, info = self._world.prev_obs, self._world.prev_info
+        for item, rel_pos in zip(items, rel_positions):
+            cmd1 = f"/summon item ~{int(rel_pos[0])} ~{int(rel_pos[1])} ~{int(rel_pos[2])} "
+            cmd2 = "{Item:" + "{id:" + item + ",Count:1d}}"
+            cmd = cmd1 + cmd2
+            obs, _, done, info = self.execute_cmd(cmd, action)
+        return obs, 0, done, info
+
     def set_block(
         self,
         blocks: Union[str, List[str]],
@@ -115,11 +152,11 @@ class CMDExecutor:
             rel_positions
         ), f"Expect {len(blocks)} relative positions, but got {len(rel_positions)}"
 
-        obs, info = self._world.prev_obs, self._world.prev_info
+        # obs, info = self._world.prev_obs, self._world.prev_info
         for block, rel_pos in zip(blocks, rel_positions):
             cmd = f"/setblock ~{int(rel_pos[0])} ~{int(rel_pos[1])} ~{int(rel_pos[2])} {block}"
-            obs, _, _, info = self.execute_cmd(cmd, action)
-        return obs, 0, self._world.is_terminated, info
+            obs, _, done, info = self.execute_cmd(cmd, action)
+        return obs, 0, done, info
 
     def clear_inventory(self, action: Optional[dict] = None):
         obs, _, done, info = self.execute_cmd("/clear", action)

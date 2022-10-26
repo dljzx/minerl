@@ -52,6 +52,8 @@ NEW_SAVVAN_ENV_SPEC = basalt_specs.Savanna()
 
 NEW_OCEAN_ENV_SPEC = basalt_specs.Ocean()
 
+NEW_PLAINS_ENV_SPEC = basalt_specs.Plains()
+
 NEW_TAIGA_ENV_SPEC = basalt_specs.Taiga()
 
 NEW_FOREST_ENV_SPEC = basalt_specs.Forest()

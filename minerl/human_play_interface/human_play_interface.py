@@ -3,7 +3,7 @@
 # to MineRL
 # Intended for quick data collection without hassle or
 # human corrections (agent plays but human can take over).
-
+import os
 from typing import List, Optional, Dict, Any
 import time
 from collections import defaultdict
@@ -91,6 +91,9 @@ class HumanPlayInterface(gym.Wrapper):
         self.window.switch_to()
         self.window.flip()
 
+        self.needtp = False
+        self.biome = None
+
         self.last_pov = None
         self.last_mouse_delta = [0, 0]
         self.task_id = task_id
@@ -98,9 +101,19 @@ class HumanPlayInterface(gym.Wrapper):
         self.mobs =None
         self.blocks =None
         self.specified_biome = None
+        self.loot = False
 
         if self.task_id != None:
             task_specs = CUS_TASKS_SPECS[self.task_id].copy()
+            if 'needtp'in task_specs.keys():
+                self.needtp = True
+                self.biome = task_specs['specified_biome']
+
+            if 'initial_loot'in task_specs.keys():
+                self.loot = True
+                self.loot_items = task_specs['initial_loot']
+                self.loot_positions = task_specs['loot_position']
+
             if 'initial_inventory' in task_specs.keys():
                 self.inventory = task_specs['initial_inventory']
                 print(self.inventory)
@@ -114,6 +127,8 @@ class HumanPlayInterface(gym.Wrapper):
             if 'initial_blocks' in task_specs.keys():
                 self.blocks = task_specs['initial_blocks']
                 print(self.blocks)
+                self.blocks_max_dis = task_specs['blocks_max_dis']
+                self.blocks_min_dis = task_specs['blocks_min_dis']
             
             if 'specified_biome' in task_specs.keys():
                 self.specified_biome = task_specs['specified_biome']
@@ -151,6 +166,71 @@ class HumanPlayInterface(gym.Wrapper):
         # Inverted
         self.last_mouse_delta[0] -= dy * MOUSE_MULTIPLIER
         self.last_mouse_delta[1] += dx * MOUSE_MULTIPLIER
+
+    def teleport_safe_position(self, position):
+        # teleport the surface of z, x.
+            
+        
+        # close fall damage
+        action = self.env.action_space.noop()
+        action['chat'] = f'/gamerule fallDamage false'
+        self.env.step(action)
+        
+        # rollout trajectory
+        for _ in range(5):
+            self.env.step(self.env.action_space.noop())
+        
+        # tp to highest position
+        position = ' '.join(position.split(' ')[0:1]+['150']+position.split(' ')[-1:])
+        action = self.env.action_space.noop()
+        action['chat'] = f'/teleport @s {position}'
+        self.env.step(action)
+        
+        # rollout trajectory
+        for _ in range(100):
+            self.env.step(self.env.action_space.noop())
+        
+        # open fall damage
+        action = self.env.action_space.noop()
+        action['chat'] = f'/gamerule fallDamage true'
+        self.env.step(action)
+        
+        # rollout trajectory
+        for _ in range(5):
+            self.env.step(self.env.action_space.noop())
+    
+
+    def spawn_biome_generator(self, specific_biome='plains'):
+        
+        # log path
+        logdir = os.environ.get('MALMO_MINECRAFT_OUTPUT_LOGDIR', '.')
+        log_dir = os.path.join(logdir, 'logs', f'mc_{self.env.instances[0]._target_port - 9000}.log')
+        
+        # find position
+        action = self.env.action_space.noop()
+        action['chat'] = f'/locatebiome {specific_biome}'
+        self.env.step(action)
+        
+        # rollout trajectory
+        for _ in range(10):
+            self.env.step(self.env.action_space.noop())
+            
+        # tp to target biome
+        import re
+        with open(log_dir, 'r') as f:
+            lines = f.readlines()
+            sample = [l for l in lines if '[CHAT] The nearest' in l][0]
+        position = ' '.join(re.search('at.*\[.*\]', sample).group().replace(',', '').replace('[', '').replace(']', '').split(' ')[1:])
+        action = self.env.action_space.noop()
+        
+        # # tp to safe location
+        self.teleport_safe_position(position)
+        # action['chat'] = f'/teleport @s {position}'
+        # action['chat'] = f'/execute in overworld run tp @s {position}'
+        # env.step(action)
+        # # rollout trajectory
+        # for _ in range(10):
+        #     env.step(env.action_space.noop())
 
     def _validate_minerl_env(self, minerl_env):
         """Make sure we have a valid MineRL environment. Raises if not."""
@@ -208,14 +288,16 @@ class HumanPlayInterface(gym.Wrapper):
         self._show_message("Resetting environment...")
         obs = self.env.reset()
 
-        if self.specified_biome != None:
-            obs = self._after_sim_locate_biome(self.specified_biome)
+        if self.needtp:
+            self.spawn_biome_generator(specific_biome=self.specified_biome)
         if self.inventory != None:
             obs = self._after_sim_reset_inventory(self.inventory)
         if self.mobs != None:
             obs = self._after_sim_reset_mobs(self.mobs)
         if self.blocks != None:
-            obs = self._after_sim_reset_blocks(self.mobs)
+            obs = self._after_sim_reset_blocks(self.blocks)
+        if self.loot:
+            obs = self._after_sim_reset_loot(self.loot_items,self.loot_positions)
         
         # obs, info = self._after_sim_reset_hook(obs,self.mobs,self.blocks)
         self._update_image(obs["pov"])
@@ -242,23 +324,49 @@ class HumanPlayInterface(gym.Wrapper):
             print('finish locate biome')
         return obs
 
+    def _after_sim_reset_loot(self, loot_items: List[str]=None, loot_positions: List[List[int]]=None):
+        if loot_items != None:
+            
+            obs, _, _, info = self._cmd_exe.spawn_items(
+                loot_items, [loot_positions]
+            )
+            print('finish resetting loot')
+        return obs
+
     def _after_sim_reset_mobs(self, mobs: List[str]=None):
         if mobs != None:
             dis = math.ceil((self.mobs_max_dis / math.sqrt(2)))
             print('dis:',dis)
             mobs_position = []
             for _ in mobs:
-
+                x, z = 0.0 , 0.0
+                while math.sqrt(x*x+z*z)<self.mobs_min_dis:
+                    x = random.uniform(-dis,dis)
+                    z = random.uniform(-dis,dis)
+                mobs_position.append([x,1,z])
+            
+            print('mobs_position',mobs_position)
             obs, _, _, info = self._cmd_exe.spawn_mobs(
-                mobs, [[0,1,1]]
+                mobs, mobs_position
             )
             print('finish summon mobs')
         return obs
 
     def _after_sim_reset_blocks(self, blocks: List[str]=None):
         if blocks != None:
+            dis = math.ceil((self.blocks_max_dis / math.sqrt(2)))
+            print('dis:',dis)
+            blocks_position = []
+            for _ in blocks:
+                x, z = 0.0 , 0.0
+                while math.sqrt(x*x+z*z)<self.blocks_min_dis:
+                    x = random.uniform(-dis,dis)
+                    z = random.uniform(-dis,dis)
+                blocks_position.append([x,0,z])
+            
+            print('blocks_position',blocks_position)
             obs, _, _, info = self._cmd_exe.set_block(
-                blocks, [[0,1,1]]
+                blocks, blocks_position
             )
             print('finish setting blocks')
         return obs

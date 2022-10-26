@@ -2,9 +2,16 @@ import logging
 import minerl
 import gym
 from minerl.human_play_interface.human_play_interface import HumanPlayInterface
-
 import coloredlogs
 coloredlogs.install(logging.DEBUG)
+import importlib_resources
+from omegaconf import OmegaConf
+
+def _resource_file_path(fname) -> str:
+    with importlib_resources.path("minerl.env", fname) as p:
+        return str(p)
+
+CUS_TASKS_SPECS = OmegaConf.load(_resource_file_path("custom_tasks_specs.yaml"))
 
 ENV_NAMES = [
     "MineRLBasaltFindCave-v0",
@@ -33,6 +40,12 @@ NEW_NAMES = [
     "Iceplains-v0",
 ]
 
+NEED_TP_NAMES = [
+    "Desert-v0",
+    "Savanna-v0",
+    "Mesa-v0",
+]
+
 VALID_NAMES = [
     "ExtremeHills-v0",
     "Beach-v0",
@@ -41,7 +54,14 @@ VALID_NAMES = [
     "River-v0",
     "Swamp-v0",
     "Forest-v0",
+    "Plains-v0"
 ]
+rel_pos = [0,0,0]
+it = "coal"
+cmd1 = f"/summon item ~{int(rel_pos[0])} ~{int(rel_pos[1])} ~{int(rel_pos[2])} "
+cmd2 = "{Item:" + "{id:" + it + ",Count:1d}}"
+cmd = cmd1+cmd2
+print(cmd)
 
 ENV_KWARGS = dict(
     fov_range=[70, 70],
@@ -55,10 +75,15 @@ ENV_KWARGS = dict(
     use_chat_to_control=True
 )
 
+task_id = "custom_navigate_8"
+
 def test_human_interface():
-    env = gym.make(NEW_NAMES[-1])
-    # env = gym.make(NEW_NAMES[1])
-    env = HumanPlayInterface(env, "custom_combat_8")
+    task_specs = CUS_TASKS_SPECS[task_id].copy()
+    if 'makestart'in task_specs.keys():
+        env = gym.make(task_specs['makestart'])
+    else:
+        env = gym.make(VALID_NAMES[0])
+    env = HumanPlayInterface(env, task_id)
     env.reset()
     done = False
     while not done:

@@ -1,29 +1,3 @@
-
-custom:combat:0:
-  __cls__: combat
-  task: combat a spider
-  prompt: kill a spider
-  guidance: kill a spider guidance
-  initialize:
-    world_generator: combat
-    inventory: combat
-    mobs: spider
-  criteria:
-    criteric: kill
-
-
-custom:combat:1:
-  __cls__: combat
-  task: combat a cow
-  prompt: kill a cow
-  guidance: kill a cow guidance
-  initialize:
-    world_generator: combat
-    inventory: combat
-    mobs: cow
-  criteria:
-    criteric: kill
-
 custom_combat_1:
   __cls__: custom
   task: combat a spider
@@ -34,27 +8,13 @@ custom_combat_1:
   reward_weights: 1
   initial_mobs: ["rabbit","cat","chicken","spider"]
   min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 9.0
+  mobs_min_dis: 6.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
-    feet:
-      name: "iron_boots"
-    legs:
-      name: "iron_leggings"
-    chest:
-      name: "iron_chestplate"
-    head:
-      name: "iron_helmet"
-    offhand:
-      name: "shield"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_2:
   __cls__: custom
@@ -63,30 +23,15 @@ custom_combat_2:
   guidance: kill a sheep
   target_names: sheep
   target_quantities: 1
-  reward_weights: 1
   initial_mobs: ["rabbit","cat","chicken","sheep"]
   min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 9.0
+  mobs_min_dis: 6.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
-    feet:
-      name: "iron_boots"
-    legs:
-      name: "iron_leggings"
-    chest:
-      name: "iron_chestplate"
-    head:
-      name: "iron_helmet"
-    offhand:
-      name: "shield"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_3:
   __cls__: custom
@@ -98,17 +43,13 @@ custom_combat_3:
   reward_weights: 1
   initial_mobs: ["rabbit","cow","chicken","sheep"]
   min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 9.0
+  mobs_min_dis: 6.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_4:
   __cls__: custom
@@ -120,17 +61,13 @@ custom_combat_4:
   reward_weights: 1
   initial_mobs: ["rabbit","cow","horse","sheep"]
   min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 9.0
+  mobs_min_dis: 6.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_5:
   __cls__: custom
@@ -142,17 +79,13 @@ custom_combat_5:
   reward_weights: 1
   initial_mobs: ["rabbit","cow","horse","chicken"]
   min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 9.0
+  mobs_min_dis: 6.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_6:
   __cls__: custom
@@ -161,52 +94,41 @@ custom_combat_6:
   guidance: kill a pig
   target_names: pig
   target_quantities: 1
-  reward_weights: 1
   initial_mobs: ["pig","cow","horse","sheep"]
   min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 9.0
+  mobs_min_dis: 6.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_7:
   __cls__: custom
   task: combat a rabbit
   prompt: combat a rabbit in night forest with a iron sword, shield, and a full suite of iron armors
-  guidance: kill a rabbit
   target_names: rabbit
   target_quantities: 1
-  reward_weights: 1
-  initial_mobs: ["rabbit","cow","horse","sheep"]
-  min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  initial_mobs: ["rabbit"]
+  mobs_max_dis: 9.0
+  mobs_min_dis: 6.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_8:
   __cls__: custom
   task: combat a horse
-  prompt: combat a wolf in night forest with a iron sword, shield, and a full suite of iron armors
-  target_names: wolf
+  prompt: combat a horse in night forest with a iron sword, shield, and a full suite of iron armors
+  target_names: horse
   target_quantities: 1
   initial_mobs: ["horse"]
   mobs_max_dis: 7.0
   mobs_min_dis: 3.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
@@ -233,10 +155,9 @@ custom_combat_9:
   target_quantities: 1
   reward_weights: 1
   initial_mobs: ["rabbit","zombie","horse","cow"]
-  min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 7.0
+  mobs_min_dis: 3.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
@@ -251,10 +172,6 @@ custom_combat_9:
     offhand:
       name: "shield"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_combat_10:
   __cls__: custom
@@ -265,10 +182,9 @@ custom_combat_10:
   target_quantities: 1
   reward_weights: 1
   initial_mobs: ["rabbit","witch","horse","cow"]
-  min_spawn_range: 5
-  initial_mob_spawn_range_low: [-7, 1, -7]
-  initial_mob_spawn_range_high: [7, 1, 7]
-  start_at_night: false
+  mobs_max_dis: 7.0
+  mobs_min_dis: 3.0
+  needtp: True
   initial_inventory:
     mainhand:
       name: "iron_sword"
@@ -283,10 +199,6 @@ custom_combat_10:
     offhand:
       name: "shield"
   specified_biome: "desert"
-  allow_mob_spawn: false
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_navigate_1:
   __cls__: custom
@@ -297,14 +209,10 @@ custom_navigate_1:
   target_quantities: 1
   reward_weights: 1
   initial_mobs: ["rabbit","chicken","horse","sheep"]
-  min_spawn_range: 7
-  initial_mob_spawn_range_low: [-10, 1, -10]
-  initial_mob_spawn_range_high: [10, 1, 10]
-  start_at_night: false
-  specified_biome: "plains"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  mobs_max_dis: 17.0
+  mobs_min_dis: 7.0
+  needtp: True
+  specified_biome: "desert"
 
 custom_navigate_2:
   __cls__: custom
@@ -315,14 +223,10 @@ custom_navigate_2:
   target_quantities: 1
   reward_weights: 1
   initial_mobs: ["cow","chicken","horse","sheep"]
-  min_spawn_range: 7
-  initial_mob_spawn_range_low: [-10, 1, -10]
-  initial_mob_spawn_range_high: [10, 1, 10]
-  start_at_night: false
-  specified_biome: "plains"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  mobs_max_dis: 17.0
+  mobs_min_dis: 7.0
+  needtp: True
+  specified_biome: "desert"
 
 custom_navigate_3:
   __cls__: custom
@@ -333,14 +237,10 @@ custom_navigate_3:
   target_quantities: 1
   reward_weights: 1
   initial_mobs: ["cow","chicken","horse","sheep"]
-  min_spawn_range: 7
-  initial_mob_spawn_range_low: [-10, 1, -10]
-  initial_mob_spawn_range_high: [10, 1, 10]
-  start_at_night: false
-  specified_biome: "plains"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  mobs_max_dis: 17.0
+  mobs_min_dis: 7.0
+  needtp: True
+  specified_biome: "desert"
 
 custom_navigate_4:
   __cls__: custom
@@ -349,9 +249,6 @@ custom_navigate_4:
   guidance: find a tree
   target_names: tree
   specified_biome: "plains"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_navigate_5:
   __cls__: custom
@@ -359,21 +256,8 @@ custom_navigate_5:
   prompt: navigate a sand
   guidance: find a sand
   target_names: sand
+  makestart: "Beach-v0"
   specified_biome: "beach"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
-
-custom_navigate_6:
-  __cls__: custom
-  task: navigate a sand
-  prompt: navigate a sand
-  guidance: find a sand
-  target_names: sand
-  specified_biome: "beach"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
 
 custom_navigate_7:
   __cls__: custom
@@ -382,9 +266,7 @@ custom_navigate_7:
   guidance: find a Furnace
   target_names: Furnace
   specified_biome: "beach"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  
 
 custom_navigate_8:
   __cls__: custom
@@ -392,14 +274,11 @@ custom_navigate_8:
   prompt: navigate a Crafting table
   guidance: find a Crafting table
   target_names: crafting_table
-  specified_biome: "desert"
+  needtp: True
+  specified_biome: "sunflower_plains"
   initial_blocks: ["crafting_table"]
-  min_block_range: 7
-  initial_block_set_range_low: [0, 1, 0]
-  initial_block_set_range_high: [10, 1, 10]
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  blocks_max_dis: 17.0
+  blocks_min_dis: 7.0
 
 custom_navigate_9:
   __cls__: custom
@@ -408,9 +287,7 @@ custom_navigate_9:
   guidance: find a chicken
   target_names: chicken
   specified_biome: "beach"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  
 
 custom_navigate_10:
   __cls__: custom
@@ -419,9 +296,7 @@ custom_navigate_10:
   guidance: find a cat
   target_names: cat
   specified_biome: "beach"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  
 
 custom_mine_1:
   __cls__: custom
@@ -429,18 +304,251 @@ custom_mine_1:
   prompt: mine a oak log
   guidance: mine a oak log
   target_names: oak_log
-  specified_biome: "plains"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  # needtp: True
+  specified_biome: "forest"
+  makestart: "Plains-v0"
 
 custom_mine_2:
   __cls__: custom
-  task: navigate a oak log
-  prompt: mine a oak log
-  guidance: mine a oak log
-  target_names: oak_log
-  specified_biome: "plains"
-  use_voxel: true
-  voxel_size: {xmin: -1, ymin: -1, zmin: -1, xmax: 1, ymax: 1, zmax: 1}
-  use_lidar: false
+  task: navigate a stone
+  prompt: mine a stone
+  guidance: mine a stone
+  # needtp: True
+  target_names: stone
+  specified_biome: "extreme_hills"
+  makestart: "ExtremeHills-v0"
+  initial_inventory:
+    mainhand:
+      name: "iron_pickaxe"
+
+
+custom_harvest_1:
+  __cls__: custom
+  task: harvest a wool
+  prompt: harvest a wool
+  guidance: harvest a wool
+  needtp: True
+  target_names: wool
+  specified_biome: "desert"
+  initial_mobs: ["cow","sheep","sheep","sheep"]
+  mobs_max_dis: 17.0
+  mobs_min_dis: 7.0
+  initial_inventory:
+    mainhand:
+      name: "shears"
+
+custom_harvest_2:
+  __cls__: custom
+  task: harvest a milk
+  prompt: harvest a milk
+  guidance: harvest a milk
+  needtp: True
+  target_names: milk
+  specified_biome: "desert"
+  initial_mobs: ["cow","cow","sheep","cow"]
+  mobs_max_dis: 17.0
+  mobs_min_dis: 7.0
+  initial_inventory:
+    mainhand:
+      name: "milk_bucket"
+
+custom_equip_1:
+  __cls__: custom
+  task: equip a iron sword
+  prompt: equip a iron sword
+  guidance: equip a iron sword
+  target_names: iron sword
+  specified_biome: "desert"
+  
+  initial_inventory:
+    1:
+      name: "iron_sword"
+    2:
+      name: "iron_axe"
+    3:
+      name: "apple"
+      quantity: 4
+
+custom_craft_1:
+  __cls__: custom
+  task: craft a stick
+  prompt: craft a stick
+  guidance: craft a stick
+  target_names: stick
+  specified_biome: "desert"
+  
+  initial_inventory:
+    10:
+      name: "iron_sword"
+    12:
+      name: "iron_axe"
+    13:
+      name: "apple"
+      quantity: 4
+
+    14:
+      name: "oak_planks"
+      quantity: 4
+
+    17:
+      name: "birch_planks"
+      quantity: 4
+
+custom_craft_2:
+  __cls__: custom
+  task: craft a stone pickaxe
+  prompt: craft a stone pickaxe
+  guidance: craft a stone pickaxe
+  target_names: stone_pickaxe
+  specified_biome: "desert"
+  initial_blocks: ["crafting_table"]
+  blocks_max_dis: 7.0
+  blocks_min_dis: 3.0
+  
+  initial_inventory:
+    10:
+      name: "iron_sword"
+    12:
+      name: "cobblestone"
+      quantity: 4
+    13:
+      name: "apple"
+      quantity: 4
+
+    14:
+      name: "oak_planks"
+      quantity: 4
+
+    17:
+      name: "birch_planks"
+      quantity: 4
+    23:
+      name: "stick"
+      quantity: 3
+
+    25:
+      name: "blackstone"
+      quantity: 4
+
+custom_craft_3:
+  __cls__: custom
+  task: craft a crafting table
+  prompt: craft a crafting table
+  guidance: craft a crafting table
+  target_names: crafting_table
+  specified_biome: "desert"
+  
+  initial_inventory:
+    10:
+      name: "iron_sword"
+    12:
+      name: "iron_axe"
+    13:
+      name: "apple"
+      quantity: 4
+
+    14:
+      name: "oak_planks"
+      quantity: 4
+
+    17:
+      name: "birch_planks"
+      quantity: 4
+
+custom_drop_2:
+  __cls__: custom
+  task: drop an apple
+  prompt: drop an apple
+  guidance: drop an apple
+  target_names: apple
+  specified_biome: "desert"
+  
+  initial_inventory:
+    2:
+      name: "iron_sword"
+    4:
+      name: "iron_axe"
+    3:
+      name: "apple"
+      quantity: 4
+    7:
+      name: "oak_planks"
+      quantity: 4
+    8:
+      name: "birch_planks"
+      quantity: 4
+
+custom_place_1:
+  __cls__: custom
+  task: place an oak log
+  prompt: place an oak log
+  guidance: place an oak log
+  target_names: oak log
+  specified_biome: "desert"
+  
+  initial_inventory:
+    2:
+      name: "oak_log"
+      quantity: 4
+    4:
+      name: "iron_axe"
+    3:
+      name: "apple"
+      quantity: 4
+    7:
+      name: "oak_planks"
+      quantity: 4
+    8:
+      name: "birch_planks"
+      quantity: 4
+
+custom_consume_1:
+  __cls__: custom
+  task: consume a bread
+  prompt: consume a bread
+  guidance: consume a bread
+  target_names: bread
+  specified_biome: "desert"
+  
+  initial_inventory:
+    2:
+      name: "oak_log"
+      quantity: 4
+    4:
+      name: "iron_axe"
+    3:
+      name: "apple"
+      quantity: 4
+    7:
+      name: "oak_planks"
+      quantity: 4
+    8:
+      name: "bread"
+      quantity: 4
+
+custom_loot_1:
+  __cls__: custom
+  task: loot a coal
+  prompt: loot a coal
+  guidance: loot a coal
+  target_names: coal
+  specified_biome: "desert"
+  
+  initial_loot: coal
+  loot_position: [0,0,3]
+
+  initial_inventory:
+    2:
+      name: "oak_log"
+      quantity: 4
+    4:
+      name: "iron_axe"
+    3:
+      name: "apple"
+      quantity: 4
+    7:
+      name: "oak_planks"
+      quantity: 4
+    8:
+      name: "bread"
+      quantity: 4

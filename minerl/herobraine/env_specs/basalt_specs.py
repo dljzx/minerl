@@ -680,3 +680,14 @@ class Iceplains(NewBaseEnvSpec):
             biome = 37,
             inventory=[],
         )
+
+class Plains(NewBaseEnvSpec):
+    def __init__(self):
+        super().__init__(
+            name="Plains-v0",
+            # demo_server_experiment_name="village_make_house",
+            max_episode_steps=3*MINUTE,
+            preferred_spawn_biome="plains",
+            biome = 37,
+            inventory=[],
+        )

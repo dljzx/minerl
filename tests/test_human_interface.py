@@ -12,6 +12,35 @@ ENV_NAMES = [
     "MineRLBasaltCreateVillageAnimalPen-v0",
     "MineRLBasaltBuildVillageHouse-v0", 
     'MineRLTreechop-v0',  # Doesn't work because it isn't a HumanEmbodied environment
+    "Summontest-v0",
+]
+
+NEW_NAMES = [
+    "Summontest-v0",
+    "FlowerPlains-v0",   # sunflower-plains doesn't work
+    "ExtremeHills-v0",
+    "Desert-v0",
+    "Beach-v0",
+    "Ocean-v0",
+    "Savanna-v0",
+    "Taiga-v0",
+    "Jungle-v0",
+    "River-v0",
+    "Swamp-v0",
+    "Forest-v0",
+    "Mesa-v0",
+    "Mushroom-v0",
+    "Iceplains-v0",
+]
+
+VALID_NAMES = [
+    "ExtremeHills-v0",
+    "Beach-v0",
+    "Ocean-v0",
+    "Taiga-v0",
+    "River-v0",
+    "Swamp-v0",
+    "Forest-v0",
 ]
 
 ENV_KWARGS = dict(
@@ -27,8 +56,9 @@ ENV_KWARGS = dict(
 )
 
 def test_human_interface():
-    env = gym.make(ENV_NAMES[3])
-    env = HumanPlayInterface(env)
+    env = gym.make(NEW_NAMES[-1])
+    # env = gym.make(NEW_NAMES[1])
+    env = HumanPlayInterface(env, "custom_combat_8")
     env.reset()
     done = False
     while not done:

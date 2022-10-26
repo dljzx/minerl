@@ -76,6 +76,7 @@ class BiomeGenerator(Handler):
         return "biome_generator"
 
     def xml_template(self) -> str:
+        print('making BiomeGenerator')
         return str(
             """<BiomeGenerator
                 forceReset="{{force_reset | string | lower}}"
@@ -84,6 +85,7 @@ class BiomeGenerator(Handler):
         )
 
     def __init__(self, biome_id: int, force_reset: bool = True):
+        
         self.biome_id = biome_id
         self.force_reset = force_reset
 

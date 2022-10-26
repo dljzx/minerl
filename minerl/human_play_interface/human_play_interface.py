@@ -4,14 +4,25 @@
 # Intended for quick data collection without hassle or
 # human corrections (agent plays but human can take over).
 
-from typing import Optional
+from typing import List, Optional, Dict, Any
 import time
 from collections import defaultdict
 
+import random
+import math
 import gym
 from gym import spaces
 import pyglet
 import pyglet.window.key as key
+from minerl.herobraine import inventory
+from minerl.herobraine.cmd_executor import CMDExecutor
+from minerl.herobraine.inventory import InventoryItem
+from omegaconf import OmegaConf
+import importlib_resources
+
+def _resource_file_path(fname) -> str:
+    with importlib_resources.path("minerl.env", fname) as p:
+        return str(p)
 
 # Mapping from MineRL action space names to pyglet keys
 MINERL_ACTION_TO_KEYBOARD = {
@@ -42,6 +53,8 @@ MINERL_ACTION_TO_KEYBOARD = {
 
 KEYBOARD_TO_MINERL_ACTION = {v: k for k, v in MINERL_ACTION_TO_KEYBOARD.items()}
 
+def _parse_inventory_dict(inv_dict: dict[str, dict]) -> list[InventoryItem]:
+    return [InventoryItem(slot=k, **v) for k, v in inv_dict.items()]
 
 # Camera actions are in degrees, while mouse movement is in pixels
 # Multiply mouse speed by some arbitrary multiplier
@@ -49,12 +62,13 @@ MOUSE_MULTIPLIER = 0.1
 
 MINERL_FPS = 20
 MINERL_FRAME_TIME = 1 / MINERL_FPS
-
+CUS_TASKS_SPECS = OmegaConf.load(_resource_file_path("custom_tasks_specs.yaml"))
 class HumanPlayInterface(gym.Wrapper):
-    def __init__(self, minerl_env):
+    def __init__(self, minerl_env, task_id=None):
         super().__init__(minerl_env)
         self._validate_minerl_env(minerl_env)
         self.env = minerl_env
+        print(self.env.__class__)
         pov_shape = self.env.observation_space["pov"].shape
         self.window = pyglet.window.Window(
             width=pov_shape[1],
@@ -62,6 +76,7 @@ class HumanPlayInterface(gym.Wrapper):
             vsync=False,
             resizable=False
         )
+        self._cmd_exe = CMDExecutor(self, False)
         self.clock = pyglet.clock.get_default()
         self.pressed_keys = defaultdict(lambda: False)
         self.window.on_mouse_motion = self._on_mouse_motion
@@ -78,6 +93,31 @@ class HumanPlayInterface(gym.Wrapper):
 
         self.last_pov = None
         self.last_mouse_delta = [0, 0]
+        self.task_id = task_id
+        self.inventory =None
+        self.mobs =None
+        self.blocks =None
+        self.specified_biome = None
+
+        if self.task_id != None:
+            task_specs = CUS_TASKS_SPECS[self.task_id].copy()
+            if 'initial_inventory' in task_specs.keys():
+                self.inventory = task_specs['initial_inventory']
+                print(self.inventory)
+
+            if 'initial_mobs' in task_specs.keys():
+                self.mobs = task_specs['initial_mobs']
+                print(self.mobs)
+                self.mobs_max_dis = task_specs['mobs_max_dis']
+                self.mobs_min_dis = task_specs['mobs_min_dis']
+
+            if 'initial_blocks' in task_specs.keys():
+                self.blocks = task_specs['initial_blocks']
+                print(self.blocks)
+            
+            if 'specified_biome' in task_specs.keys():
+                self.specified_biome = task_specs['specified_biome']
+                print(self.specified_biome)
 
         self.window.clear()
         self._show_message("Waiting for reset.")
@@ -167,9 +207,109 @@ class HumanPlayInterface(gym.Wrapper):
         self.window.clear()
         self._show_message("Resetting environment...")
         obs = self.env.reset()
+
+        if self.specified_biome != None:
+            obs = self._after_sim_locate_biome(self.specified_biome)
+        if self.inventory != None:
+            obs = self._after_sim_reset_inventory(self.inventory)
+        if self.mobs != None:
+            obs = self._after_sim_reset_mobs(self.mobs)
+        if self.blocks != None:
+            obs = self._after_sim_reset_blocks(self.mobs)
+        
+        # obs, info = self._after_sim_reset_hook(obs,self.mobs,self.blocks)
         self._update_image(obs["pov"])
         self.clock.tick()
         return obs
+
+    def _after_sim_reset_inventory(self, inventory_list: InventoryItem=None):
+        if inventory_list != None:
+            inventory = _parse_inventory_dict(
+                inventory_list
+            )
+            obs, _, _, info = self._cmd_exe.set_inventory(
+                inventory
+            )
+            print('finish resetting inventory')
+        return obs
+
+    def _after_sim_locate_biome(self, biome: str =None):
+        if biome != None:
+            
+            obs, _, _, info = self._cmd_exe.locate_biome(
+                biome
+            )
+            print('finish locate biome')
+        return obs
+
+    def _after_sim_reset_mobs(self, mobs: List[str]=None):
+        if mobs != None:
+            dis = math.ceil((self.mobs_max_dis / math.sqrt(2)))
+            print('dis:',dis)
+            mobs_position = []
+            for _ in mobs:
+
+            obs, _, _, info = self._cmd_exe.spawn_mobs(
+                mobs, [[0,1,1]]
+            )
+            print('finish summon mobs')
+        return obs
+
+    def _after_sim_reset_blocks(self, blocks: List[str]=None):
+        if blocks != None:
+            obs, _, _, info = self._cmd_exe.set_block(
+                blocks, [[0,1,1]]
+            )
+            print('finish setting blocks')
+        return obs
+
+    def _after_sim_reset_hook(
+        self, reset_obs: Dict[str, Any], mobs: List[str]=None, blocks: List[str]=None):
+        mobs_rel_positions = []
+        if mobs != None:
+            # for i in range(len(self._initial_mobs)):
+            #     mobs_rel_position = self._mob_spawn_range_space.sample()
+            #     if self.min_spawn_range != None:
+            #         dis = mobs_rel_position[0]**2 + mobs_rel_position[2]**2
+            #         print(dis)
+            #         while dis < self.min_spawn_range**2:
+            #             print('retry')
+            #             mobs_rel_position = self._mob_spawn_range_space.sample()
+            #             dis = mobs_rel_position[0]**2 + mobs_rel_position[1]**2
+            #     mobs_rel_positions.append(mobs_rel_position)
+            #     print('mobs_rel_position: ',mobs_rel_position)
+
+            # print('mobs_rel_positions: ',mobs_rel_positions)
+            obs, _, _, info = self._cmd_exe.spawn_mobs(
+                mobs, [[0,1,1]]
+            )
+            print('finish summon mobs')
+
+        blocks_rel_positions = []
+        if blocks != None:
+            # for i in range(len(self._initial_blocks)):
+                # blocks_rel_position = self._block_set_range_space.sample()
+                # if self.min_block_range != None:
+                #     dis = blocks_rel_position[0]**2 + blocks_rel_position[2]**2
+                #     print(dis)
+                #     while dis < self.min_block_range**2:
+                #         print('retry')
+                #         blocks_rel_position = self._block_set_range_space.sample()
+                #         dis = blocks_rel_position[0]**2 + blocks_rel_position[1]**2
+                # blocks_rel_positions.append(blocks_rel_position)
+                # print('blocks_rel_position: ',blocks_rel_position)
+
+            # print('blocks_rel_positions: ',blocks_rel_positions)
+            # obs, _, _, info = self.env.set_block(
+            #     self._initial_blocks, blocks_rel_positions
+            # )
+            
+            obs, _, _, info = self._cmd_exe.set_block(
+                blocks, [[0,1,4]]
+            )
+            print('finish setting blocks')
+
+        return obs, info
 
     def step(self, action: Optional[dict] = None, override_if_human_input: bool = False):
         """

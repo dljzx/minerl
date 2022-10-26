@@ -27,6 +27,7 @@ class CMDExecutor:
         "spreadplayers",
         "give",
         "item",
+        "locatebiome",
     }
 
     def __init__(self, world, raise_error_on_invalid_cmds: bool = False):
@@ -122,6 +123,11 @@ class CMDExecutor:
 
     def clear_inventory(self, action: Optional[dict] = None):
         obs, _, done, info = self.execute_cmd("/clear", action)
+        return obs, 0, done, info
+
+    def locate_biome(self, biome: Union[str, int] = None, action: Optional[dict] = None):
+        cmd = f"/locatebiome {biome}"
+        obs, _, done, info = self.execute_cmd(cmd, action)
         return obs, 0, done, info
 
     def set_inventory(

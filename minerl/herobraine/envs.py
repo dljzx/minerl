@@ -4,6 +4,7 @@
 import collections
 
 import gym
+from minerl.herobraine import inventory
 
 from minerl.herobraine.env_spec import EnvSpec
 from minerl.herobraine.env_specs.treechop_specs import Treechop
@@ -13,6 +14,7 @@ from minerl.herobraine.env_specs.navigate_specs import Navigate
 from minerl.herobraine.env_specs.obtain_specs import ObtainDiamondShovelEnvSpec
 from minerl.herobraine.wrappers import Obfuscated, Vectorized
 from minerl.herobraine.env_specs import basalt_specs
+from minerl.herobraine.env_specs import env_init
 import os
 
 # Must load non-obfuscated envs first!
@@ -33,6 +35,39 @@ MINERL_BASALT_FIND_CAVES_ENV_SPEC = basalt_specs.FindCaveEnvSpec()
 MINERL_BASALT_MAKE_WATERFALL_ENV_SPEC = basalt_specs.MakeWaterfallEnvSpec()
 MINERL_BASALT_PEN_ANIMALS_VILLAGE_ENV_SPEC = basalt_specs.PenAnimalsVillageEnvSpec()
 MINERL_BASALT_VILLAGE_HOUSE_ENV_SPEC = basalt_specs.VillageMakeHouseEnvSpec()
+
+NEW_FLOWER_PLAIN_ENV_SPEC = basalt_specs.FlowerPlainsEnvSpec()
+
+NEW_DESERT_ENV_SPEC = basalt_specs.Desert()
+
+NEW_RIVER_ENV_SPEC = basalt_specs.River()
+
+NEW_JUNGLE_ENV_SPEC = basalt_specs.Jungle()
+
+NEW_BEACH_ENV_SPEC = basalt_specs.Beach()
+
+NEW_SWAMP_ENV_SPEC = basalt_specs.Swamp()
+
+NEW_SAVVAN_ENV_SPEC = basalt_specs.Savanna()
+
+NEW_OCEAN_ENV_SPEC = basalt_specs.Ocean()
+
+NEW_TAIGA_ENV_SPEC = basalt_specs.Taiga()
+
+NEW_FOREST_ENV_SPEC = basalt_specs.Forest()
+
+NEW_MUSHROOM_ENV_SPEC = basalt_specs.Mushroom()
+
+NEW_ICEPLAINS_ENV_SPEC = basalt_specs.Iceplains()
+
+NEW_MESA_ENV_SPEC = basalt_specs.Mesa()
+
+EXTREME_HILLS = basalt_specs.ExtremeHills()
+
+init_inventory = {'mainhand': {'name': 'iron_sword'}, 'feet': {'name': 'iron_boots'}, 'legs': {'name': 'iron_leggings'}, 'chest': {'name': 'iron_chestplate'}, \
+    'head': {'name': 'iron_helmet'}, 'offhand': {'name': 'shield'}}
+
+MINERL_SUMMON_TEST = basalt_specs.Summontest()
 
 # Register the envs.
 ENVS = [env for env in locals().values() if isinstance(env, EnvSpec)]
